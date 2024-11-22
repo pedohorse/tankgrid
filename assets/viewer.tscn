@@ -1,0 +1,79 @@
+[gd_scene load_steps=6 format=3 uid="uid://buks1p35oyjio"]
+
+[ext_resource type="Script" path="res://assets/viewer.gd" id="1_h5jql"]
+[ext_resource type="PackedScene" uid="uid://c2dc4b66cbptx" path="res://assets/map.tscn" id="1_mxwab"]
+[ext_resource type="PackedScene" uid="uid://d2a2snw0nu1o7" path="res://assets/battler.tscn" id="2_q70wq"]
+[ext_resource type="Script" path="res://assets/viewer_root.gd" id="2_sviux"]
+[ext_resource type="Script" path="res://assets/time_meter.gd" id="3_fpqbw"]
+
+[node name="Viewer" type="Node"]
+script = ExtResource("1_h5jql")
+
+[node name="root" type="Node2D" parent="."]
+scale = Vector2(0.15, 0.15)
+script = ExtResource("2_sviux")
+
+[node name="map" parent="root" instance=ExtResource("1_mxwab")]
+z_index = -1
+
+[node name="Battler" parent="root" instance=ExtResource("2_q70wq")]
+
+[node name="interface" type="Control" parent="."]
+z_index = 1000
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="step_fwd" type="Button" parent="interface"]
+layout_mode = 0
+offset_left = 109.0
+offset_top = 23.0
+offset_right = 190.0
+offset_bottom = 54.0
+text = "step >"
+
+[node name="step_fwd" type="Button" parent="interface/step_fwd"]
+layout_mode = 0
+offset_left = -84.0
+offset_right = -3.0
+offset_bottom = 31.0
+text = "< step"
+
+[node name="play_pause" type="Button" parent="interface"]
+layout_mode = 0
+offset_left = 206.0
+offset_top = 23.0
+offset_right = 299.0
+offset_bottom = 54.0
+text = "play/pause"
+
+[node name="time_meter" type="SpinBox" parent="interface"]
+layout_mode = 0
+offset_left = 312.0
+offset_top = 23.0
+offset_right = 395.062
+offset_bottom = 54.0
+max_value = 1e+06
+script = ExtResource("3_fpqbw")
+
+[node name="speed_meter" type="SpinBox" parent="interface"]
+layout_mode = 0
+offset_left = 404.0
+offset_top = 22.0
+offset_right = 514.0
+offset_bottom = 53.0
+min_value = -20.0
+max_value = 20.0
+value = 1.0
+prefix = "speed"
+
+[connection signal="map_loaded" from="root/map" to="root" method="center_map"]
+[connection signal="play_time_changed" from="root/Battler" to="interface/time_meter" method="set_time"]
+[connection signal="pressed" from="interface/step_fwd" to="root/Battler" method="_on_time_step_button_pressed"]
+[connection signal="pressed" from="interface/step_fwd/step_fwd" to="root/Battler" method="_on_time_step_back_pressed"]
+[connection signal="pressed" from="interface/play_pause" to="root/Battler" method="_on_playpause_button_pressed"]
+[connection signal="value_changed" from="interface/time_meter" to="root/Battler" method="_on_time_meter_value_changed"]
+[connection signal="value_changed" from="interface/speed_meter" to="root/Battler" method="set_playback_speed"]

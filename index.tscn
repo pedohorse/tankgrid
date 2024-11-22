@@ -1,0 +1,139 @@
+[gd_scene load_steps=8 format=3 uid="uid://c4smaas2in2ry"]
+
+[ext_resource type="PackedScene" uid="uid://b78tcyxepi533" path="res://assets/web/user_login_info.tscn" id="1_rqir5"]
+[ext_resource type="PackedScene" uid="uid://c74rgoffcvsim" path="res://assets/web/user_program_control.tscn" id="2_c0glh"]
+[ext_resource type="StyleBox" uid="uid://b6ep3vvumy1r6" path="res://assets/panel_style_box_flat.tres" id="3_0ka4j"]
+[ext_resource type="Script" path="res://assets/web/score_table.gd" id="3_p8gk0"]
+[ext_resource type="Texture2D" uid="uid://cwfc0bg34n8ar" path="res://assets/images/tank_bg.png" id="5_1n2aj"]
+[ext_resource type="Texture2D" uid="uid://ybc64x20ppdr" path="res://assets/images/donat.png" id="6_ukl26"]
+
+[sub_resource type="GDScript" id="GDScript_i3n2n"]
+script/source = "extends RichTextLabel
+
+@onready var copied_label := $copied_label as Label
+
+var _copied_tween = null
+
+func _on_meta_clicked(meta: Variant) -> void:
+	DisplayServer.clipboard_set(meta as String)
+	if _copied_tween != null:
+		_copied_tween.kill()
+	copied_label.modulate.a = 1.0
+	_copied_tween = create_tween()
+	_copied_tween.tween_property(copied_label, \"modulate:a\", 0.0, 5)
+	
+"
+
+[node name="MainPage" type="Node"]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+z_index = -100
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -3.0
+offset_right = -2.0
+offset_bottom = -1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_1n2aj")
+expand_mode = 5
+
+[node name="ScoreTable" type="Tree" parent="."]
+offset_left = 31.0
+offset_top = 27.0
+offset_right = 644.0
+offset_bottom = 621.0
+allow_search = false
+script = ExtResource("3_p8gk0")
+
+[node name="BattlePopup" type="PopupMenu" parent="ScoreTable"]
+size = Vector2i(112, 100)
+item_count = 1
+item_0/text = "Open battle"
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -274.0
+offset_top = 17.0
+offset_right = -24.0
+offset_bottom = 33.0
+grow_horizontal = 0
+theme_override_styles/panel = ExtResource("3_0ka4j")
+
+[node name="LoginContainer" parent="PanelContainer" instance=ExtResource("1_rqir5")]
+layout_mode = 2
+
+[node name="PanelContainer2" type="PanelContainer" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -439.0
+offset_top = -98.0
+offset_right = -32.0
+offset_bottom = -34.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_styles/panel = ExtResource("3_0ka4j")
+
+[node name="UserControl" parent="PanelContainer2" instance=ExtResource("2_c0glh")]
+layout_mode = 2
+
+[node name="donat" type="TextEdit" parent="."]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -3.0
+offset_top = -283.0
+offset_right = 257.0
+offset_bottom = -1.0
+grow_vertical = 0
+text = "donate to support the project"
+editable = false
+drag_and_drop_selection_enabled = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+wrap_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="donat"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 69.3333
+offset_right = 221.0
+offset_bottom = 284.333
+texture = ExtResource("6_ukl26")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="donat_label" type="RichTextLabel" parent="donat"]
+clip_contents = false
+layout_mode = 0
+offset_left = 89.0
+offset_top = 40.0
+offset_right = 157.0
+offset_bottom = 68.0
+bbcode_enabled = true
+text = "[url=monero:87PfeRT6CRzNpdRMk7EdBt7YvqjqWwnBw8pYHVf4USvS8QKECqUavUJdMAwXt8Zz5uBb31U5ftPgEfEjxWTSMWzK2QYERLk]monero[/url]"
+script = SubResource("GDScript_i3n2n")
+
+[node name="copied_label" type="Label" parent="donat/donat_label"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.412
+anchor_top = 0.737
+anchor_right = 0.412
+anchor_bottom = 0.737
+offset_left = -66.3493
+offset_top = -37.9693
+offset_right = 82.6507
+offset_bottom = -14.9693
+text = "copied to clipboard"
+
+[connection signal="item_mouse_selected" from="ScoreTable" to="ScoreTable" method="_on_item_mouse_selected"]
+[connection signal="index_pressed" from="ScoreTable/BattlePopup" to="ScoreTable" method="_on_battle_popup_index_pressed"]
+[connection signal="meta_clicked" from="donat/donat_label" to="donat/donat_label" method="_on_meta_clicked"]

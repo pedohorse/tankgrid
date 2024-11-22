@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://d2a2snw0nu1o7"]
+
+[ext_resource type="Script" path="res://assets/battler.gd" id="1_mwnw1"]
+[ext_resource type="PackedScene" uid="uid://cfu1q1vvg4cd5" path="res://assets/sprites/tank.tscn" id="2_7sb7u"]
+[ext_resource type="Texture2D" uid="uid://b8xjjt1b0tgxv" path="res://assets/sprites/ammo.png" id="3_hipqi"]
+
+[node name="Battler" type="Node2D"]
+script = ExtResource("1_mwnw1")
+tank_object = ExtResource("2_7sb7u")
+ammocrate_sprite = ExtResource("3_hipqi")
+
+[node name="BattleTimer" type="Timer" parent="."]
+wait_time = 0.025
+
+[connection signal="timeout" from="BattleTimer" to="." method="_on_battle_timer_timeout"]

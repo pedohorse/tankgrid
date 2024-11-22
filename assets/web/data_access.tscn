@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dpuvoe5trym8x"]
+
+[ext_resource type="Script" path="res://assets/web/dataaccess.gd" id="1_q1btk"]
+
+[node name="DataAccess" type="Node"]
+script = ExtResource("1_q1btk")

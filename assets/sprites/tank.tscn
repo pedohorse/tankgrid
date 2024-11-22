@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3 uid="uid://cfu1q1vvg4cd5"]
+
+[ext_resource type="Texture2D" uid="uid://cxdb0skpidwft" path="res://assets/sprites/tank/Tank_caterpillar.png" id="1_tapby"]
+[ext_resource type="Script" path="res://assets/sprites/tank.gd" id="1_tsm4q"]
+[ext_resource type="Texture2D" uid="uid://dmljyroj4uhum" path="res://assets/sprites/tank/tank_body.png" id="2_ottr7"]
+[ext_resource type="Texture2D" uid="uid://bur8eqk261esx" path="res://assets/sprites/tank/Tank_top.png" id="3_arnd6"]
+[ext_resource type="PackedScene" uid="uid://banhpa4velrqa" path="res://assets/muzzle.tscn" id="5_v0dj4"]
+
+[node name="Tank" type="Node2D"]
+script = ExtResource("1_tsm4q")
+
+[node name="tracks" type="Sprite2D" parent="."]
+texture = ExtResource("1_tapby")
+
+[node name="body" type="Sprite2D" parent="."]
+z_index = 1
+texture = ExtResource("2_ottr7")
+
+[node name="tower" type="Sprite2D" parent="."]
+z_index = 4
+texture = ExtResource("3_arnd6")
+
+[node name="bullet_trace" type="Line2D" parent="."]
+visible = false
+z_index = 1
+points = PackedVector2Array(0, 0, 0, -1000)
+default_color = Color(1, 0, 0, 1)
+
+[node name="muzzleflash" parent="." instance=ExtResource("5_v0dj4")]
+visible = false
+z_index = 2

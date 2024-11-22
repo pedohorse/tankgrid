@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://col4edthomi1"]
+
+[ext_resource type="Script" path="res://web_loader.gd" id="1_70hib"]
+
+[node name="web_loader" type="Node"]
+script = ExtResource("1_70hib")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="loading_label" type="RichTextLabel" parent="CenterContainer"]
+z_index = 100
+custom_minimum_size = Vector2(1000, 32)
+layout_mode = 2
+text = "LOADING BATTLE ..."
+fit_content = true

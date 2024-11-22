@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://banhpa4velrqa"]
+
+[ext_resource type="Texture2D" uid="uid://c7iim7x7cu1g4" path="res://assets/sprites/m_1.png" id="1_umys3"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-12, -323.43)
+rotation = -1.5708
+scale = Vector2(1.99856, 1.99856)
+texture = ExtResource("1_umys3")
