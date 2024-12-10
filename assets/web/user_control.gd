@@ -72,6 +72,7 @@ func _on_logout() -> void:
 
 func _on_add_button_pressed() -> void:
 	var prog_name := name_input.text
+	name_input.text = ""
 	prog_name = prog_name.lstrip(" ").rstrip(" ")
 	if prog_name == "":
 		print("name must not be empty")
