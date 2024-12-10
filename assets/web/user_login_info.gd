@@ -101,6 +101,7 @@ func _on_register_btn_pressed() -> void:
 		_show_error("passwords do not match")
 		return
 	var invite := invite_lineedit.text
+	password_lineedit.text = ""
 	password2_lineedit.text = ""
 	password2_lineedit.hide()
 	invite_lineedit.text = ""
