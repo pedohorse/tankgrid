@@ -31,6 +31,8 @@ size_flags_horizontal = 3
 [node name="NewName" type="LineEdit" parent="ControlContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+placeholder_text = "name cannot be empty"
 
 [node name="AddButton" type="Button" parent="ControlContainer"]
 layout_mode = 2
