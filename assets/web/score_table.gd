@@ -14,6 +14,7 @@ class DuelData:
 	var battles: Array[BattleResult]
 
 class BattleResult:
+	var winner: int
 	var map_id: int
 	var battle_id: int
 
@@ -72,6 +73,7 @@ func _received_battle_statistics(battlestat):
 		var battle_res = BattleResult.new()
 		battle_res.battle_id = battle_id
 		battle_res.map_id = map_id
+		battle_res.winner = winner
 		_battle_datas[i2 * num_labels + i1].battles.append(battle_res)
 		if winner == 0:
 			_battle_datas[i2 * num_labels + i1].draws += 1
@@ -85,9 +87,9 @@ func _received_battle_statistics(battlestat):
 	for y in range(num_labels):
 		for x in range(num_labels):
 			items[y].set_text(x+1, '{0}/{1}/{2}'.format([
-				_battle_datas[y * num_labels + x].wins,
-				_battle_datas[y * num_labels + x].losses,
-				_battle_datas[y * num_labels + x].draws,
+				_battle_datas[x * num_labels + y].wins,  # we show win if LEFT label wins over TOP
+				_battle_datas[x * num_labels + y].losses,
+				_battle_datas[x * num_labels + y].draws,
 			]))
 			
 
@@ -102,7 +104,12 @@ func _on_item_mouse_selected(mouse_position: Vector2, mouse_button_index: int) -
 	popup.clear()
 	_cur_popupped_battle = battles
 	for battle in battles:
-		popup.add_item("map {0}, battle {1}".format([battle.map_id, battle.battle_id]))
+		var bres = "DRAW!"
+		if battle.winner == 1:
+			bres = "<-WON!"
+		elif battle.winner == 2:
+			bres = "<-LOST!"
+		popup.add_item("{2} map {0}, battle {1}".format([battle.map_id, battle.battle_id, bres]))
 		
 	popup.popup(Rect2i(pos.x, pos.y, 128, 128))
 
