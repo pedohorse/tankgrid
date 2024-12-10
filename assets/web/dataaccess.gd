@@ -303,3 +303,33 @@ func logout(callback):
 
 			req.queue_free()
 	)
+
+
+func delete_user_forever(callback):
+	var req = HTTPRequest.new()
+	add_child(req)
+	req.request(api_host + "/api/user", _common_headers(), HTTPClient.METHOD_DELETE)
+	req.request_completed.connect(
+		func(result, response_code, _headers, body):
+			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
+				if callback != null:
+					var error := Error.new()
+					error.text = "bad server response"
+					callback.call(false, error)
+				return
+			var reply: Dictionary = JSON.parse_string(body.get_string_from_utf8())
+			if reply.get("status", "fail") != "ok":
+				if callback != null:
+					var error = Error.new()
+					error.text = reply.get("reason", "unknown error")
+					callback.call(false, error)
+				return
+
+			set_session("")
+			if callback != null:
+				callback.call(true, null)
+
+			logged_out.emit()
+
+			req.queue_free()
+	)
