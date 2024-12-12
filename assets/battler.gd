@@ -94,6 +94,14 @@ class ShootAction extends BaseAction:
 			if maybe_muzzleflash != null:
 				maybe_muzzleflash.visible = 0.1 < t and t < 0.75
 
+class ShowLogAction extends BaseAction:
+	var log_line: String
+	
+	func apply_action(node: Node2D, time: int):
+		if time >= end_time:
+			if is_instance_of(node, Tank):
+				node.push_log_line(log_line)
+	
 
 class MapObject:
 	var id: int
@@ -161,6 +169,18 @@ func _parse_next_line() -> void:
 		var mp := act_regex.search(subject)
 		var id := mp.get_string('id')
 		next_action_durations[id] = int(line[3])
+	elif action.begins_with('log['):
+		var ma := act_regex.search(action)
+		var mp := act_regex.search(subject)
+		var id := mp.get_string('id')
+		
+		ma.get_string('args')
+		var obj: MapObject = objects[id]
+		var objaction = ShowLogAction.new()
+		objaction.end_time = int(line[2])
+		objaction.start_time = objaction.end_time
+		objaction.log_line = ma.get_string('args')
+		obj.actions.append(objaction)
 	elif action.begins_with('spawn['):
 	
 		var ma := act_regex.search(action)
@@ -173,11 +193,12 @@ func _parse_next_line() -> void:
 		var angle := orientation_to_angle(args[2])
 
 		var sprite = null
-		if line[0].begins_with('player['):
+		if subject.begins_with('player['):
 			sprite = tank_object.instantiate()
 			add_child(sprite)
+			sprite.set_tank_name(mp.get_string('args'))
 			sprite.set_color(Color.from_hsv(randf(), 0.5+0.5*randf(), 1))
-		elif line[0].begins_with('ammocrate'):
+		elif subject.begins_with('ammocrate'):
 			sprite = Sprite2D.new()
 			sprite.texture = ammocrate_sprite
 			add_child(sprite)
