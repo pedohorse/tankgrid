@@ -40,6 +40,7 @@ texture = ExtResource("5_1n2aj")
 expand_mode = 5
 
 [node name="ScoreTable" type="Tree" parent="."]
+clip_contents = false
 offset_left = 31.0
 offset_top = 27.0
 offset_right = 644.0
@@ -51,6 +52,30 @@ script = ExtResource("3_p8gk0")
 size = Vector2i(112, 100)
 item_count = 1
 item_0/text = "Open battle"
+
+[node name="BattleTimer" type="Timer" parent="ScoreTable"]
+wait_time = 30.0
+autostart = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScoreTable"]
+layout_mode = 0
+offset_left = 186.0
+offset_top = -25.0
+offset_right = 316.0
+offset_bottom = 5.0
+
+[node name="Label" type="Label" parent="ScoreTable/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "next battle in:"
+
+[node name="time_remaining" type="Label" parent="ScoreTable/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "0"
+
+[node name="TimeDisplayTimer" type="Timer" parent="ScoreTable"]
+autostart = true
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 anchors_preset = 1
@@ -136,4 +161,6 @@ text = "copied to clipboard"
 
 [connection signal="item_mouse_selected" from="ScoreTable" to="ScoreTable" method="_on_item_mouse_selected"]
 [connection signal="index_pressed" from="ScoreTable/BattlePopup" to="ScoreTable" method="_on_battle_popup_index_pressed"]
+[connection signal="timeout" from="ScoreTable/BattleTimer" to="ScoreTable" method="_on_battle_timer_timeout"]
+[connection signal="timeout" from="ScoreTable/TimeDisplayTimer" to="ScoreTable" method="_on_time_display_timer_timeout"]
 [connection signal="meta_clicked" from="donat/donat_label" to="donat/donat_label" method="_on_meta_clicked"]

@@ -333,3 +333,31 @@ func delete_user_forever(callback):
 
 			req.queue_free()
 	)
+
+
+func get_time_to_battle(callback):
+	var req = HTTPRequest.new()
+	add_child(req)
+	req.request(api_host + "/api/time_to_next_battle", _common_headers(), HTTPClient.METHOD_GET)
+	req.request_completed.connect(
+		func(result, response_code, _headers, body):
+			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
+				if callback != null:
+					var error = BackendNotAvailableError.new()
+					error.text = "failed to connect"
+					callback.call(0, error)
+				return
+			var reply: Dictionary = JSON.parse_string(body.get_string_from_utf8())
+			if reply.get("status", "fail") != "ok":
+				if callback != null:
+					var error = Error.new()
+					error.text = reply.get("reason", "unknown reason")
+					callback.call(0, error)
+				return
+
+			var time_remaining = int(reply.get("time_remaining", -1))
+			if callback != null:
+				callback.call(time_remaining, null)
+
+			req.queue_free()
+	)

@@ -2,10 +2,13 @@ extends Tree
 
 @onready var data_access := get_tree().root.get_node("DataAccess") as BattleDataAccess
 @onready var popup := $BattlePopup as PopupMenu
+@onready var time_remaining_label := $HBoxContainer/time_remaining as Label
 
 # NOTE: not nested arrays cuz godot static typing doesn't support it, and i want it
 var _battle_datas: Array[DuelData] = []
 var _cur_popupped_battle = null
+var _last_time_remaining = 9223372036854775807  # maxint
+var _time_remaining_predict_offset = 0
 
 class DuelData:
 	var wins: int
@@ -21,6 +24,7 @@ class BattleResult:
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	populate()
+	_on_battle_timer_timeout()
 
 func populate():
 	data_access.get_battle_statistics(_received_battle_statistics)
@@ -118,3 +122,22 @@ func _on_battle_popup_index_pressed(index: int) -> void:
 	JavaScriptBridge.eval('''
 	window.open(location.pathname.slice(0, location.pathname.lastIndexOf('/')) + "/battle_loader?battle_id={0}", '_blank').focus();
 	'''.format([battle.battle_id]))
+
+
+func _on_battle_timer_timeout() -> void:
+	data_access.get_time_to_battle(
+		func(time_remaining: int, error):
+			if error != null:
+				print("failed to get battle timer: {0}".format([error.text]))
+			time_remaining_label.text = "%d:%02d:%02d" % [floor(time_remaining/3600), floor(time_remaining%3600/60), floor(time_remaining%60)]
+			if _last_time_remaining < time_remaining:
+				populate()
+			_last_time_remaining = time_remaining
+			_time_remaining_predict_offset = 0
+	)
+
+
+func _on_time_display_timer_timeout() -> void:
+	_time_remaining_predict_offset += 1
+	var time_remaining = _last_time_remaining - _time_remaining_predict_offset
+	time_remaining_label.text = "%d:%02d:%02d" % [floor(time_remaining/3600), floor(time_remaining%3600/60), floor(time_remaining%60)]
