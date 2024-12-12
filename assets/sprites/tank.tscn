@@ -1,10 +1,46 @@
-[gd_scene load_steps=6 format=3 uid="uid://cfu1q1vvg4cd5"]
+[gd_scene load_steps=9 format=3 uid="uid://cfu1q1vvg4cd5"]
 
 [ext_resource type="Texture2D" uid="uid://cxdb0skpidwft" path="res://assets/sprites/tank/Tank_caterpillar.png" id="1_tapby"]
 [ext_resource type="Script" path="res://assets/sprites/tank.gd" id="1_tsm4q"]
 [ext_resource type="Texture2D" uid="uid://dmljyroj4uhum" path="res://assets/sprites/tank/tank_body.png" id="2_ottr7"]
 [ext_resource type="Texture2D" uid="uid://bur8eqk261esx" path="res://assets/sprites/tank/Tank_top.png" id="3_arnd6"]
 [ext_resource type="PackedScene" uid="uid://banhpa4velrqa" path="res://assets/muzzle.tscn" id="5_v0dj4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ncm5m"]
+bg_color = Color(0.196078, 0.196078, 0.196078, 0.764706)
+border_color = Color(0, 0, 0, 0.847059)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="GDScript" id="GDScript_4xkjq"]
+script/source = "extends Label
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	rotation = -get_parent().rotation
+"
+
+[sub_resource type="GDScript" id="GDScript_iwwmh"]
+script/source = "extends VBoxContainer
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	rotation = -get_parent().rotation
+"
 
 [node name="Tank" type="Node2D"]
 script = ExtResource("1_tsm4q")
@@ -29,3 +65,30 @@ default_color = Color(1, 0, 0, 1)
 [node name="muzzleflash" parent="." instance=ExtResource("5_v0dj4")]
 visible = false
 z_index = 2
+
+[node name="name" type="Label" parent="."]
+z_index = 10
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = -25.0
+offset_right = 26.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(5, 5)
+pivot_offset = Vector2(-25, 25)
+theme_override_styles/normal = SubResource("StyleBoxFlat_ncm5m")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = SubResource("GDScript_4xkjq")
+
+[node name="logbox" type="VBoxContainer" parent="."]
+offset_left = 25.0
+offset_top = 25.0
+offset_right = 65.0
+offset_bottom = 65.0
+scale = Vector2(5, 5)
+pivot_offset = Vector2(-25, -25)
+script = SubResource("GDScript_iwwmh")
