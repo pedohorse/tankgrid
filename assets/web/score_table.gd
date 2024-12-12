@@ -62,6 +62,7 @@ func _received_battle_statistics(battlestat):
 	
 	var items: Array[TreeItem] = []
 	i = 0
+	print(labels)
 	for name in labels:
 		item = create_item(root)
 		item.set_text(0, name)
@@ -69,6 +70,7 @@ func _received_battle_statistics(battlestat):
 		i += 1
 	
 	for battle_result in battlestat['battle_results']:
+		print(battle_result)
 		var i1 = battle_result['l1']
 		var i2 = battle_result['l2']
 		var battle_id = battle_result['b']
@@ -81,20 +83,20 @@ func _received_battle_statistics(battlestat):
 		battle_res.winner = winner
 		_battle_datas[i2 * num_labels + i1].battles.append(battle_res)
 		if winner == 0:
-			_battle_datas[i2 * num_labels + i1].draws += 1
+			_battle_datas[i1 * num_labels + i2].draws += 1
 		elif winner == 1:
-			_battle_datas[i2 * num_labels + i1].wins += 1
+			_battle_datas[i1 * num_labels + i2].wins += 1
 		elif winner == 2:
-			_battle_datas[i2 * num_labels + i1].losses += 1
+			_battle_datas[i1 * num_labels + i2].losses += 1
 		else:
 			print("WRONG BATTLE DATA!")
 		
 	for y in range(num_labels):
 		for x in range(num_labels):
 			items[y].set_text(x+1, '{0}/{1}/{2}'.format([
-				_battle_datas[x * num_labels + y].wins,  # we show win if LEFT label wins over TOP
-				_battle_datas[x * num_labels + y].losses,
-				_battle_datas[x * num_labels + y].draws,
+				_battle_datas[y * num_labels + x].wins,
+				_battle_datas[y * num_labels + x].losses,
+				_battle_datas[y * num_labels + x].draws,
 			]))
 			
 
@@ -105,7 +107,7 @@ func _on_item_mouse_selected(mouse_position: Vector2, mouse_button_index: int) -
 	var col = get_column_at_position(mouse_position)
 	if item.get_index() == 0 or col == 0:
 		return
-	var battles = _battle_datas[(item.get_index() - 1) * (columns - 1) + (col - 1)].battles
+	var battles = _battle_datas[(col - 1) * (columns - 1) + (item.get_index() - 1)].battles
 	popup.clear()
 	_cur_popupped_battle = battles
 	for battle in battles:
