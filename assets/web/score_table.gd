@@ -30,6 +30,7 @@ func populate():
 	data_access.get_battle_statistics(_received_battle_statistics)
 	
 func _received_battle_statistics(battlestat):
+	clear()
 	if battlestat == null:
 		print("error getting battles")
 		return
