@@ -111,7 +111,7 @@ func _on_register_btn_pressed() -> void:
 
 func _on_delete_user_btn_pressed() -> void:
 	var confirm_dialog = AcceptDialog.new()
-	confirm_dialog.dialog_text = "Delete your user?\nAll your programs will be deleted too\nThis action is irreversible!"
+	confirm_dialog.dialog_text = "Delete your user?\nAll your programs will be deleted too\nYou will not be able to reuse this user name\nThis action is irreversible!"
 	confirm_dialog.title = "are you sure sure??"
 	confirm_dialog.add_cancel_button("cancel!")
 	get_tree().root.add_child(confirm_dialog)
