@@ -89,5 +89,9 @@ func _on_add_button_pressed() -> void:
 			_file_access = null
 	)
 	_file_access.open(".py")
-	
-	
+
+
+func _on_manual_pressed() -> void:
+	JavaScriptBridge.eval('''
+	window.open(location.pathname.slice(0, location.pathname.lastIndexOf('/')) + "/manual", '_blank').focus();
+	''')

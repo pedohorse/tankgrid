@@ -14,9 +14,20 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_xkmvs")
 
-[node name="Label" type="Label" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer"]
 layout_mode = 2
 text = "My Programs:"
+
+[node name="Control" type="Control" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="manual" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "open manual"
 
 [node name="ProgramList" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -38,4 +49,5 @@ placeholder_text = "name cannot be empty"
 layout_mode = 2
 text = "+ new"
 
+[connection signal="pressed" from="HBoxContainer/manual" to="." method="_on_manual_pressed"]
 [connection signal="pressed" from="ControlContainer/AddButton" to="." method="_on_add_button_pressed"]
