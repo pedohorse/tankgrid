@@ -67,10 +67,10 @@ wrap_mode = 1
 [node name="TextEdit2" type="CodeEdit" parent="ScrollContainer/Control"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.5
+anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 67.0
+offset_left = -505.0
 offset_top = 239.0
 offset_right = -13.0
 offset_bottom = -9.0
@@ -133,11 +133,14 @@ syntax_highlighter = SubResource("CodeHighlighter_14sd2")
 highlight_all_occurrences = true
 
 [node name="RichTextLabel" type="RichTextLabel" parent="ScrollContainer/Control"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.321
 offset_left = 10.0
 offset_top = 239.0
-offset_right = 624.0
-offset_bottom = 1795.0
+offset_right = -520.0
+offset_bottom = 1153.0
 theme_override_colors/default_color = Color(0.753984, 0.753984, 0.753984, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_d7d7b")
 bbcode_enabled = true
