@@ -17,6 +17,7 @@ func push_log_line(line: String):
 	var logline = Label.new()
 	logline.text = line
 	logbox.add_child(logline)
+	logbox.move_child(logline, 0)
 	var tween = logline.create_tween()
 	tween.tween_callback(
 		func():
