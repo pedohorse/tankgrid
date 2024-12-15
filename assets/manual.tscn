@@ -1,0 +1,167 @@
+[gd_scene load_steps=3 format=3 uid="uid://dc47dxdwrg5tk"]
+
+[sub_resource type="CodeHighlighter" id="CodeHighlighter_14sd2"]
+number_color = Color(1.15995e-05, 0.892672, 0, 1)
+symbol_color = Color(0.612902, 0.740408, 1, 1)
+function_color = Color(0.713718, 0.713719, 0, 1)
+member_variable_color = Color(1, 0, 1, 1)
+color_regions = {
+"\" \"": Color(0.486275, 0.803922, 0, 1),
+"' '": Color(0.486275, 0.803922, 0, 1)
+}
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d7d7b"]
+content_margin_left = 6.0
+content_margin_top = 6.0
+content_margin_right = 6.0
+content_margin_bottom = 6.0
+bg_color = Color(0.176471, 0.176471, 0.176471, 0.776471)
+border_color = Color(0, 0, 0, 0.901961)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="Manual" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+vertical_scroll_mode = 2
+
+[node name="Control" type="Control" parent="ScrollContainer"]
+custom_minimum_size = Vector2(0, 2000)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TextEdit" type="TextEdit" parent="ScrollContainer/Control"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.509
+anchor_right = 0.509
+offset_left = -360.296
+offset_top = 18.0
+offset_right = 366.704
+offset_bottom = 217.0
+grow_vertical = 2
+text = "Tank is controlled by a python program.
+
+If program finishes or raises an exception - the tank will not move any more (but that does not count as defeat), therefore it makes sense to have an infinite loop in your program.
+
+Battle happens with its own game time. every tank action takes some time to complete."
+editable = false
+middle_mouse_paste_enabled = false
+wrap_mode = 1
+
+[node name="TextEdit2" type="CodeEdit" parent="ScrollContainer/Control"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 67.0
+offset_top = 239.0
+offset_right = -13.0
+offset_bottom = -9.0
+grow_vertical = 2
+text = "# Example tank program
+print(\"hello, I am an example program\")
+
+while True:
+    looked = look('forward')
+    if (l := looked[-1][1]):
+        print(f'see: {l}')
+        if l.startswith('player'):
+            shoot()
+            turn_cw()
+            move_forward()
+            continue
+        elif l.startswith('ammocrate'):
+            for i in range(len(looked)):
+                move_forward()
+            continue
+
+    need_to_turn = len(looked) == 1  # we facing sight blocked
+
+    looked_l = look('left')
+    looked_r = look('right')
+    if (l := looked_l[-1][1]):
+        if l.startswith('player'):
+            turn_ccw()
+            shoot()
+            need_to_turn = False
+            continue
+        elif l.startswith('ammocrate'):
+            turn_ccw()
+            need_to_turn = False
+            continue
+    if (l := looked_r[-1][1]):
+        if l.startswith('player'):
+            turn_cw()
+            shoot()
+            need_to_turn = False
+            continue
+        elif l.startswith('ammocrate'):
+            turn_cw()
+            need_to_turn = False
+            continue
+    if need_to_turn and (len(looked_l) > 1 or len(looked_r) > 1):
+        if len(looked_l) > len(looked_r):
+            turn_ccw()
+        else:
+            turn_cw()
+        continue
+    elif need_to_turn:  # deadend!
+        turn_cw()
+        turn_cw()
+    move_forward()"
+editable = false
+middle_mouse_paste_enabled = false
+wrap_mode = 1
+syntax_highlighter = SubResource("CodeHighlighter_14sd2")
+highlight_all_occurrences = true
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ScrollContainer/Control"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 239.0
+offset_right = 624.0
+offset_bottom = 1795.0
+theme_override_colors/default_color = Color(0.753984, 0.753984, 0.753984, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_d7d7b")
+bbcode_enabled = true
+text = "any [color=yellow]python[/color] code [b]does not take game time[/b] to run, but calling [b]any tank functional[/b] - does cost game time. Please note the cost in function description
+
+The following game functions are available:
+[ul][u][code]look(direction: str):[/code][/u][/ul]
+[indent][ul bullet=◦]Tank sees in a single line in one of given direcrion relative to it's current orientation: 'forward', 'left', 'right', 'back'[/ul][/indent][indent][ul bullet=◦]Returns a list of tuples. each tuple in this list represents information about a visible tile, starting from the tile right next to the tank and going forward, until blocked by map or object. each tuple is a pair: name of map tile, and name of first object on that if any, or None instead.[/ul][/indent][indent][ul bullet=◦]Return value example: [code][('ground', None), ('ground', None), ('ground', 'player[somename][left-side]')][/code][/ul][/indent][indent][ul bullet=◦]Cost: 4[/ul][/indent]
+[ul][u][code]move_forward():[/code][/u][/ul]
+[indent][ul bullet=◦]Tank moves to the next tile fowrard (if it can)[/ul][/indent][indent][ul bullet=◦]Cost: 10[/ul][/indent]
+[ul][u][code]wait():[/code][/u][/ul]
+[indent][ul bullet=◦]Do nothing for some time[/ul][/indent][indent][ul bullet=◦]Cost: 5[/ul][/indent]
+[ul][u][code]turn_cw():[/code][/u][/ul]
+[indent][ul bullet=◦]Turn tank clockwise[/ul][/indent][indent][ul bullet=◦]Cost: 15[/ul][/indent]
+[ul][u][code]turn_ccw():[/code][/u][/ul]
+[indent][ul bullet=◦]Turn tank counter-clockwise[/ul][/indent][indent][ul bullet=◦]Cost: 15[/ul][/indent]
+[ul][u][code]shoot():[/code][/u][/ul]
+[indent][ul bullet=◦]shoot! note, that after shooting tank needs a bit of time to recover[/ul][/indent][indent][ul bullet=◦]Cost: 5 to shoot + 15 to recover[/ul][/indent]
+[ul][u][code]check_ammo():[/code][/u][/ul]
+[indent][ul bullet=◦]Check ammunition left[/ul][/indent][indent][ul bullet=◦]Returns int: number of shots left[/ul][/indent][indent][ul bullet=◦]Cost: 2[/ul][/indent]
+[ul][u][code]check_health():[/code][/u][/ul]
+[indent][ul bullet=◦]Check hit points left[/ul][/indent][indent][ul bullet=◦]Returns int: number of hits tank can take before death[/ul][/indent][indent][ul bullet=◦]Cost: 2[/ul][/indent]
+[ul][u][code]check_hit():[/code][/u][/ul]
+[indent][ul bullet=◦]Check if tank was hit since last check[/ul][/indent][indent][ul bullet=◦]Returns str|None: None if tank was not hit, or side which took the hit as string: 'forward', 'left', 'right' or 'back'[/ul][/indent][indent][ul bullet=◦]Cost: 2[/ul][/indent]
+[ul][u][code]reset_hit():[/code][/u][/ul]
+[indent][ul bullet=◦]Reset hit information without checking[/ul][/indent][indent][ul bullet=◦]Cost: 1[/ul][/indent]
+[ul][u][code]print(something):[/code][/u][/ul]
+[indent][ul bullet=◦]just like normal print, but prints into battle log, useful for debug. do not overuse - too many prints will be penalized[/ul][/indent][indent][ul bullet=◦]Cost: 0[/ul][/indent]
+"

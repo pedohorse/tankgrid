@@ -29,6 +29,7 @@ jobs:
           cd $PROJECT_PATH
           godot --headless --verbose --export-release "Web" "$EXPORT_DIR/web/index.html"
           cp "$EXPORT_DIR/web/index.html" "$EXPORT_DIR/web/battle_loader.html"
+          cp "$EXPORT_DIR/web/index.html" "$EXPORT_DIR/web/manual.html"
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
