@@ -14,7 +14,9 @@ config/name="tankgrid battle viewer"
 run/main_scene="res://index.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 run/low_processor_mode=true
-config/icon="res://icon.svg"
+boot_splash/image="res://tank_icon_temp.png"
+boot_splash/fullsize=false
+config/icon="res://tank_icon_temp.png"
 
 [autoload]
 
