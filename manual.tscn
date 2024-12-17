@@ -45,25 +45,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="TextEdit" type="TextEdit" parent="ScrollContainer/Control"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.509
-anchor_right = 0.509
-offset_left = -360.296
-offset_top = 18.0
-offset_right = 366.704
-offset_bottom = 217.0
-grow_vertical = 2
-text = "Tank is controlled by a python program.
-
-If program finishes or raises an exception - the tank will not move any more (but that does not count as defeat), therefore it makes sense to have an infinite loop in your program.
-
-Battle happens with its own game time. every tank action takes some time to complete."
-editable = false
-middle_mouse_paste_enabled = false
-wrap_mode = 1
-
 [node name="TextEdit2" type="CodeEdit" parent="ScrollContainer/Control"]
 layout_mode = 1
 anchors_preset = -1
@@ -170,3 +151,25 @@ The following game functions are available:
 [ul][u][code]print(something):[/code][/u][/ul]
 [indent][ul bullet=◦]just like normal print, but prints into battle log, useful for debug. do not overuse - too many prints will be penalized[/ul][/indent][indent][ul bullet=◦]Cost: 0[/ul][/indent]
 "
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="ScrollContainer/Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -363.0
+offset_right = 378.0
+offset_bottom = 237.0
+grow_horizontal = 2
+theme_override_colors/default_color = Color(0.753984, 0.753984, 0.753984, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_d7d7b")
+bbcode_enabled = true
+text = "Tank is controlled by a [color=yellow]python[/color] program.
+
+If program finishes or raises an exception - the tank [b]will not move any more[/b] (but that does not count as defeat), therefore it makes sense to have an infinite loop in your program.
+
+Battle happens with its own game time. every tank action takes some time to complete.
+
+Your goal is to [b]destroy your enemies[/b] !!
+
+Every tank starts with [b][color=red]5 Hit Points[/color][/b] and [b][color=green]5 Shells[/color][/b]"
