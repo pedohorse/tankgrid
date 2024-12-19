@@ -128,7 +128,7 @@ func get_programs(callback):
 func get_battle_statistics(callback):		
 	var req = HTTPRequest.new()
 	add_child(req)
-	req.request(api_host + "/api/battle/top", _common_headers(), HTTPClient.METHOD_GET)
+	req.request(api_host + "/api/battle/all", _common_headers(), HTTPClient.METHOD_GET)
 	req.request_completed.connect(
 		func(result, response_code, _headers, body):
 			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
@@ -144,6 +144,29 @@ func get_battle_statistics(callback):
 			if callback != null:
 				# TODO: make a proper struct wrapper for it instead of having an untyped dict
 				callback.call(reply.get('battles'))
+			
+			req.queue_free()
+	)
+
+func get_battle_top(callback):		
+	var req = HTTPRequest.new()
+	add_child(req)
+	req.request(api_host + "/api/battle/top", _common_headers(), HTTPClient.METHOD_GET)
+	req.request_completed.connect(
+		func(result, response_code, _headers, body):
+			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
+				if callback != null:
+					callback.call(null)
+				return
+			var reply: Dictionary = JSON.parse_string(body.get_string_from_utf8())
+			if reply.get("status", "fail") != "ok":
+				if callback != null:
+					callback.call(null)
+				return
+			
+			if callback != null:
+				# TODO: make a proper struct wrapper for it instead of having an untyped dict
+				callback.call(reply.get('top'))
 			
 			req.queue_free()
 	)

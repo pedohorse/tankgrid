@@ -62,7 +62,6 @@ func _received_battle_statistics(battlestat):
 	
 	var items: Array[TreeItem] = []
 	i = 0
-	print(labels)
 	for name in labels:
 		item = create_item(root)
 		item.set_text(0, name)
@@ -70,7 +69,6 @@ func _received_battle_statistics(battlestat):
 		i += 1
 	
 	for battle_result in battlestat['battle_results']:
-		print(battle_result)
 		var i1 = battle_result['l1']
 		var i2 = battle_result['l2']
 		var battle_id = battle_result['b']
