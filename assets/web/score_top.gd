@@ -13,7 +13,10 @@ func populate():
 func _received_battle_top(battletop):
 	for child in get_children():
 		child.queue_free()
-	
+
+	if battletop == null:
+		return
+
 	var winners := []
 	for label in battletop:
 		winners.append([label, battletop[label]])
