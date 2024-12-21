@@ -1,5 +1,6 @@
 extends Node
 
+@onready var data_access := get_tree().root.get_node("DataAccess") as BattleDataAccess
 @onready var http_request = $HTTPRequest
 @onready var loading_label := $CenterContainer/loading_label as RichTextLabel
 @onready var container := $CenterContainer as CenterContainer
@@ -19,7 +20,7 @@ func _ready() -> void:
 	print("loading battle {0}".format([log_id_str]))
 	
 	http_request.connect("request_completed", response_received, CONNECT_ONE_SHOT)
-	http_request.request("http://127.0.0.1:8001/api/battle/log/{0}".format([int(log_id_str)]))
+	http_request.request("{0}/api/battle/log/{1}".format([data_access.api_host, int(log_id_str)]))
 
 
 func response_received(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
