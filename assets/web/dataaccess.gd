@@ -36,6 +36,9 @@ func set_session(new_session: String):
 	file.close()
 	_session = new_session
 
+func remove_session():
+	if FileAccess.file_exists("user://session"):
+		DirAccess.remove_absolute("user://session")
 
 func _common_headers() -> PackedStringArray:
 	return PackedStringArray(["Authorization: token {0}".format([_session])])
@@ -310,6 +313,7 @@ func logout(callback):
 					error.text = "bad server response"
 					callback.call(false, error)
 				return
+			set_session("")
 			var reply: Dictionary = JSON.parse_string(body.get_string_from_utf8())
 			if reply.get("status", "fail") != "ok":
 				if callback != null:
@@ -318,7 +322,6 @@ func logout(callback):
 					callback.call(false, error)
 				return
 
-			set_session("")
 			if callback != null:
 				callback.call(true, null)
 
