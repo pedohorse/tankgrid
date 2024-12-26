@@ -11,8 +11,9 @@ var playback_speed_multiplier: int = 1
 var log_end_time: int = -1
 
 class BaseAction:
-	var start_time: int
-	var end_time: int
+	var start_time: int = -1
+	var mid_time: int = -1
+	var end_time: int = -1
 	
 	func apply_action(_node: Node2D, _time: int):
 		push_warning("base method called!")
@@ -86,13 +87,13 @@ class ShootAction extends BaseAction:
 				maybe_muzzleflash.visible = false
 		else:
 			if maybe_child_trace != null:
-				maybe_child_trace.visible = 0.1 < t and t < 0.9
+				maybe_child_trace.visible = mid_time < time and t < 0.9
 
 				print(node.position, " ", line_from, " ", node.transform.inverse() * line_from)
 				maybe_child_trace.set_point_position(0, node.transform.inverse() * line_from)
 				maybe_child_trace.set_point_position(1, node.transform.inverse() * line_to)
 			if maybe_muzzleflash != null:
-				maybe_muzzleflash.visible = 0.1 < t and t < 0.75
+				maybe_muzzleflash.visible = mid_time < time and t < 0.75
 
 class ShowLogAction extends BaseAction:
 	var log_line: String
@@ -118,7 +119,7 @@ var log_time: int = -1  # represents what log line we read
 var play_log_delay = 50  # log is ahead of play
 var play_time: int = log_time - play_log_delay;  # play time is for anim, we can be behind log time
 var objects: Dictionary = {}
-var next_action_durations: Dictionary = {}
+var next_action_start_ends: Dictionary = {}
 var act_regex := RegEx.create_from_string(r'^\w+(?:\[(?<args>.*)\])?(?:\((?<id>.*)\))?$')
 var is_loaded := false
 
@@ -168,7 +169,7 @@ func _parse_next_line() -> void:
 	if action.begins_with('-'):
 		var mp := act_regex.search(subject)
 		var id := mp.get_string('id')
-		next_action_durations[id] = int(line[3])
+		next_action_start_ends[id] = [int(line[2]), int(line[2]) + int(line[3])]
 	elif action.begins_with('log['):
 		var ma := act_regex.search(action)
 		var mp := act_regex.search(subject)
@@ -231,8 +232,9 @@ func _parse_next_line() -> void:
 		#var tween := obj.sprite.create_tween()
 		#tween.tween_property(obj.sprite, "position", Vector2(x*tile_size + tile_size*0.5, y*tile_size + tile_size*0.5), 0.25)
 		var objaction := MoveAction.new()
-		objaction.end_time = int(line[2])
-		objaction.start_time = objaction.end_time - next_action_durations[id]
+		objaction.start_time = next_action_start_ends[id][0]
+		objaction.mid_time = int(line[2])
+		objaction.end_time = next_action_start_ends[id][1]
 		objaction.from_p = obj.last_parsed_p
 		objaction.to_p = Vector2(x*tile_size + tile_size*0.5, y*tile_size + tile_size*0.5)
 		objaction.from_r = obj.last_parsed_r
@@ -256,8 +258,9 @@ func _parse_next_line() -> void:
 			angle += 360
 
 		var objaction := MoveAction.new()
-		objaction.end_time = int(line[2])
-		objaction.start_time = objaction.end_time - next_action_durations[id]
+		objaction.start_time = next_action_start_ends[id][0]
+		objaction.mid_time = int(line[2])
+		objaction.end_time = next_action_start_ends[id][1]
 		objaction.from_p = obj.last_parsed_p
 		objaction.to_p = objaction.from_p
 		objaction.from_r = obj.last_parsed_r
@@ -296,8 +299,10 @@ func _parse_next_line() -> void:
 		var obj: MapObject = objects[id]
 
 		var objaction := ShootAction.new()
-		objaction.end_time = int(line[2])
-		objaction.start_time = objaction.end_time - next_action_durations[id]
+		objaction.start_time = next_action_start_ends[id][0]
+		objaction.mid_time = int(line[2])
+		# TODO: this below only works cuz there are waits after shoot, otherwise ther will be TIME OVERLAPS !!
+		objaction.end_time = next_action_start_ends[id][1] + 5 # extra time for shooting.
 		objaction.line_from = Vector2(float(args[0]) + 0.5, float(args[1]) + 0.5) * tile_size
 		objaction.line_to = Vector2(float(args[2]) + 0.5, float(args[3]) + 0.5) * tile_size
 		obj.actions.append(objaction)
