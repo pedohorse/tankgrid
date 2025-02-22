@@ -122,40 +122,84 @@ offset_left = 10.0
 offset_top = 239.0
 offset_right = -520.0
 offset_bottom = 1153.0
+focus_mode = 2
 theme_override_colors/default_color = Color(0.753984, 0.753984, 0.753984, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_d7d7b")
 bbcode_enabled = true
 text = "any [color=yellow]python[/color] code [b]does not take game time[/b] to run, but calling [b]any tank functional[/b] - does cost game time. Please note the cost in function description
 
 The following game functions are available:
-[ul][u][code]look(direction: str):[/code][/u][/ul]
-[indent][ul bullet=◦]Tank sees in a single line in one of given direcrion relative to it's current orientation: [code]'forward'[/code], [code]'left'[/code], [code]'right'[/code], [code]'back'[/code][/ul][/indent][indent][ul bullet=◦]Returns a list of tuples. each tuple in this list represents information about a visible tile, starting from the tile right next to the tank and going forward, until blocked by map or object. each tuple is a pair: name of map tile, and name of first object on that if any, or None instead.[/ul][/indent][indent][ul bullet=◦]Return value example: [code][('ground', None), ('ground', None), ('ground', 'player[somename][left-side]')][/code][/ul][/indent][indent][ul bullet=◦]Cost: 4[/ul][/indent]
-[ul][u][code]listen():[/code][/u][/ul]
-[indent][ul bullet=◦]Get general directions towards enemies[/ul][/indent][indent][ul bullet=◦]Returns List of strings, where the string has form of [code]<direction>-<side>-<align>[/code], where <direction> can be 'front' or 'back', <side> can be 'right' and 'left, and <align> can be 'along' or 'side'. This gives you information about which 1/8th of the screen around the tank the enemy is in, relative to the tank orientation. For example, 'front-right-along' means enemy is somewhere between 0 and 45 degrees to the right of the tank. 'front-right-side' - means enemy is somewhere between 45 and 90 degrees. And so on goes 'back-right-side', 'back-right-along', 'back-left-along', 'back-left-side', 'front-left-side' and 'front-left-along'[/ul][/indent][indent][ul bullet=◦]Return value example: [code]['front-right-along'][/code][/ul][/indent][indent][ul bullet=◦]Cost: 3[/ul][/indent]
-[ul][u][code]move_forward():[/code][/u][/ul]
-[indent][ul bullet=◦]Tank moves to the next tile fowrard (if it can)[/ul][/indent][indent][ul bullet=◦]Cost: 10[/ul][/indent]
-[ul][u][code]wait():[/code][/u][/ul]
-[indent][ul bullet=◦]Do nothing for some time[/ul][/indent][indent][ul bullet=◦]Cost: 5[/ul][/indent]
-[ul][u][code]turn_cw():[/code][/u][/ul]
-[indent][ul bullet=◦]Turn tank clockwise[/ul][/indent][indent][ul bullet=◦]Cost: 16[/ul][/indent]
-[ul][u][code]turn_ccw():[/code][/u][/ul]
-[indent][ul bullet=◦]Turn tank counter-clockwise[/ul][/indent][indent][ul bullet=◦]Cost: 16[/ul][/indent]
-[ul][u][code]shoot():[/code][/u][/ul]
-[indent][ul bullet=◦]shoot! note, that after shooting tank needs a bit of time to recover[/ul][/indent][indent][ul bullet=◦]Cost: 5 to shoot + 5 to recover + 20 to rearm[/ul][/indent]
-[ul][u][code]check_ammo():[/code][/u][/ul]
-[indent][ul bullet=◦]Check ammunition left[/ul][/indent][indent][ul bullet=◦]Returns int: number of shots left[/ul][/indent][indent][ul bullet=◦]Cost: 2[/ul][/indent]
-[ul][u][code]check_health():[/code][/u][/ul]
-[indent][ul bullet=◦]Check hit points left[/ul][/indent][indent][ul bullet=◦]Returns int: number of hits tank can take before death[/ul][/indent][indent][ul bullet=◦]Cost: 2[/ul][/indent]
-[ul][u][code]check_hit():[/code][/u][/ul]
-[indent][ul bullet=◦]Check if tank was hit since last check[/ul][/indent][indent][ul bullet=◦]Returns str|None: None if tank was not hit, or side which took the hit as string: 'forward', 'left', 'right' or 'back'[/ul][/indent][indent][ul bullet=◦]Cost: 2[/ul][/indent]
-[ul][u][code]reset_hit():[/code][/u][/ul]
-[indent][ul bullet=◦]Reset hit information without checking[/ul][/indent][indent][ul bullet=◦]Cost: 1[/ul][/indent]
-[ul][u][code]print(something):[/code][/u][/ul]
-[indent][ul bullet=◦]just like normal print, but prints into battle log, useful for debug. do not overuse - too many prints will be penalized[/ul][/indent][indent][ul bullet=◦]Cost: 0[/ul][/indent]
-[ul][u][code]rand():[/code][/u][/ul]
-[indent][ul bullet=◦]Get a random value in range [0-1)[/ul][/indent][indent][ul bullet=◦]Cost: 0[/ul][/indent]
-[ul][u][code]time():[/code][/u][/ul]
-[indent][ul bullet=◦]Get game time (in integer game time units)[/ul][/indent][indent][ul bullet=◦]Cost: 0[/ul][/indent]"
+[ul][u][code]look(direction: str):[/code][/u]
+[ul bullet=⁃]Tank sees in a single line in one of given direcrion relative to it's current orientation: [code]'forward'[/code], [code]'left'[/code], [code]'right'[/code], [code]'back'[/code]
+Returns a list of tuples. each tuple in this list represents information about a visible tile, starting from the tile right next to the tank and going forward, until blocked by map or object. each tuple is a pair: name of map tile, and name of first object on that if any, or None instead.
+Current ground types are: 'ground', 'wall'
+Current object types are: 'player', 'ammocrate'
+Return value example: [code][('ground', None), ('ground', None), ('ground', 'player[somename][left-side]')][/code]
+Cost: 4
+[/ul]
+[u][code]listen():[/code][/u]
+[ul bullet=⁃]Get general directions towards enemies
+Returns List of strings, where the string has form of [code]<direction>-<side>-<align>[/code], where <direction> can be 'front' or 'back', <side> can be 'right' and 'left, and <align> can be 'along' or 'side'. This gives you information about which 1/8th of the screen around the tank the enemy is in, relative to the tank orientation. For example, 'front-right-along' means enemy is somewhere between 0 and 45 degrees to the right of the tank. 'front-right-side' - means enemy is somewhere between 45 and 90 degrees. And so on goes 'back-right-side', 'back-right-along', 'back-left-along', 'back-left-side', 'front-left-side' and 'front-left-along'. Note: only certain actions like moving or shooting make a sound, also a bullet hitting a wall makes a sound and can be used to confuse listening enemy
+Return value example: [code]['front-right-along'][/code]
+Cost: 15
+[/ul]
+[u][code]move_forward():[/code][/u]
+[ul bullet=⁃]Tank moves to the next tile fowrard (if it can)
+Cost: 10
+[/ul]
+[u][code]move_backward():[/code][/u]
+[ul bullet=⁃]Tank moves to the tile behind it (if it can)
+Cost: 14
+[/ul]
+[u][code]wait():[/code][/u]
+[ul bullet=⁃]Do nothing for some time
+Cost: 5
+[/ul]
+[u][code]turn_cw():[/code][/u]
+[ul bullet=⁃]Turn tank clockwise
+Cost: 16
+[/ul]
+[u][code]turn_ccw():[/code][/u]
+[ul bullet=⁃]Turn tank counter-clockwise
+Cost: 16
+[/ul]
+[u][code]shoot():[/code][/u]
+[ul bullet=⁃]shoot! note, that after shooting tank needs a bit of time to recover
+Cost: 5 to shoot + 5 to recover + 20 to rearm
+[/ul]
+[u][code]check_ammo():[/code][/u]
+[ul bullet=⁃]Check ammunition left
+Returns int: number of shots left
+Cost: 2
+[/ul]
+[u][code]check_health():[/code][/u]
+[ul bullet=⁃]Check hit points left
+Returns int: number of hits tank can take before death
+Cost: 2
+[/ul]
+[u][code]check_hit():[/code][/u]
+[ul bullet=⁃]Check if tank was hit since last check
+Returns str|None: None if tank was not hit, or side which took the hit as string: 'forward', 'left', 'right' or 'back'
+Cost: 2
+[/ul]
+[u][code]reset_hit():[/code][/u]
+[ul bullet=⁃]Reset hit information without checking
+Cost: 1
+[/ul]
+[u][code]print(something):[/code][/u]
+[ul bullet=⁃]just like normal print, but prints into battle log, useful for debug. do not overuse - too many prints will be penalized
+Cost: 0
+[/ul]
+[u][code]rand():[/code][/u]
+[ul bullet=⁃]Get a random value in range [0-1)
+Cost: 0
+[/ul]
+[u][code]time():[/code][/u]
+[ul bullet=⁃]Get game time (in integer game time units)
+Cost: 0
+[/ul]
+[/ul]"
+selection_enabled = true
 
 [node name="RichTextLabel2" type="RichTextLabel" parent="ScrollContainer/Control"]
 layout_mode = 1
