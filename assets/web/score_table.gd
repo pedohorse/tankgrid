@@ -1,8 +1,9 @@
 extends Tree
 
+signal time_to_battle_update(remaining_time: int)
+
 @onready var data_access := get_tree().root.get_node("DataAccess") as BattleDataAccess
 @onready var popup := $BattlePopup as PopupMenu
-@onready var time_remaining_label := $HBoxContainer/time_remaining as Label
 
 # NOTE: not nested arrays cuz godot static typing doesn't support it, and i want it
 var _battle_datas: Array[DuelData] = []
@@ -40,7 +41,7 @@ func _received_battle_statistics(battlestat):
 	
 	columns = num_labels + 1
 	
-	set_column_custom_minimum_width(0, 64)
+	set_column_custom_minimum_width(0, 180)
 	set_column_expand(0, true)
 	
 	var root := create_item()
@@ -51,7 +52,7 @@ func _received_battle_statistics(battlestat):
 	var i := 1
 	for name in labels:
 		item.set_text(i, name)
-		set_column_custom_minimum_width(i, 32)
+		set_column_custom_minimum_width(i, 80)
 		i += 1
 	
 	_battle_datas = []
@@ -100,7 +101,7 @@ func _received_battle_statistics(battlestat):
 
 
 func _on_item_mouse_selected(mouse_position: Vector2, mouse_button_index: int) -> void:
-	var pos := get_global_mouse_position()
+	var pos := get_global_mouse_position() + Vector2(get_window().position)
 	var item = get_item_at_position(mouse_position)
 	var col = get_column_at_position(mouse_position)
 	if item.get_index() == 0 or col == 0:
@@ -130,15 +131,8 @@ func _on_battle_timer_timeout() -> void:
 		func(time_remaining: int, error):
 			if error != null:
 				print("failed to get battle timer: {0}".format([error.text]))
-			time_remaining_label.text = "%d:%02d:%02d" % [floor(time_remaining/3600), floor(time_remaining%3600/60), floor(time_remaining%60)]
 			if _last_time_remaining < time_remaining:
 				populate()
 			_last_time_remaining = time_remaining
-			_time_remaining_predict_offset = 0
+			time_to_battle_update.emit(_last_time_remaining)
 	)
-
-
-func _on_time_display_timer_timeout() -> void:
-	_time_remaining_predict_offset += 1
-	var time_remaining = _last_time_remaining - _time_remaining_predict_offset
-	time_remaining_label.text = "%d:%02d:%02d" % [floor(time_remaining/3600), floor(time_remaining%3600/60), floor(time_remaining%60)]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://c4smaas2in2ry"]
+[gd_scene load_steps=13 format=3 uid="uid://c4smaas2in2ry"]
 
 [ext_resource type="PackedScene" uid="uid://b78tcyxepi533" path="res://assets/web/user_login_info.tscn" id="1_rqir5"]
 [ext_resource type="Script" path="res://assets/web/score_top.gd" id="2_auujw"]
@@ -7,6 +7,18 @@
 [ext_resource type="Script" path="res://assets/web/score_table.gd" id="3_p8gk0"]
 [ext_resource type="Texture2D" uid="uid://cwfc0bg34n8ar" path="res://assets/images/tank_bg.png" id="5_1n2aj"]
 [ext_resource type="Texture2D" uid="uid://ybc64x20ppdr" path="res://assets/images/donat.png" id="6_ukl26"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_1kuw3"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_dvlwu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jip5f"]
+bg_color = Color(0.0313726, 0.0313726, 0.0313726, 0.772549)
+draw_center = false
+border_width_left = 3
+border_width_top = 3
+border_width_right = 2
+border_width_bottom = 2
 
 [sub_resource type="GDScript" id="GDScript_i3n2n"]
 script/source = "extends RichTextLabel
@@ -23,6 +35,24 @@ func _on_meta_clicked(meta: Variant) -> void:
 	_copied_tween = create_tween()
 	_copied_tween.tween_property(copied_label, \"modulate:a\", 0.0, 5)
 	
+"
+
+[sub_resource type="GDScript" id="GDScript_ag053"]
+script/source = "extends Label
+
+var _time_remaining_predict_offset: int = 0
+var _last_time_remaining: int = 0
+
+
+func _on_time_display_timer_timeout() -> void:
+	_time_remaining_predict_offset += 1
+	var time_remaining = _last_time_remaining - _time_remaining_predict_offset
+	text = \"%d:%02d:%02d\" % [floor(time_remaining/3600), floor(time_remaining%3600/60), floor(time_remaining%60)]
+
+
+func _on_score_table_time_to_battle_update(remaining_time: int) -> void:
+	_last_time_remaining = remaining_time
+	_time_remaining_predict_offset = 0
 "
 
 [node name="MainPage" type="Node"]
@@ -42,13 +72,13 @@ expand_mode = 5
 stretch_mode = 6
 
 [node name="PanelContainer3" type="PanelContainer" parent="."]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -138.0
-offset_top = 28.0
-offset_right = 140.0
-offset_bottom = 82.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -605.0
+offset_top = 5.0
+offset_right = -327.0
+offset_bottom = 59.0
 grow_horizontal = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer3"]
@@ -63,42 +93,34 @@ horizontal_alignment = 1
 layout_mode = 2
 script = ExtResource("2_auujw")
 
-[node name="ScoreTable" type="Tree" parent="."]
+[node name="Window" type="Window" parent="."]
+transparent_bg = true
+title = "match table"
+position = Vector2i(39, 36)
+size = Vector2i(700, 600)
+transparent = true
+theme_override_colors/title_color = Color(0, 0, 0, 1)
+theme_override_icons/close = SubResource("CompressedTexture2D_1kuw3")
+theme_override_icons/close_pressed = SubResource("CompressedTexture2D_dvlwu")
+theme_override_styles/embedded_border = SubResource("StyleBoxFlat_jip5f")
+theme_override_styles/embedded_unfocused_border = SubResource("StyleBoxFlat_jip5f")
+
+[node name="ScoreTable" type="Tree" parent="Window"]
 clip_contents = false
-offset_left = 31.0
-offset_top = 27.0
-offset_right = 644.0
-offset_bottom = 621.0
-allow_search = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("3_p8gk0")
 
-[node name="BattlePopup" type="PopupMenu" parent="ScoreTable"]
+[node name="BattlePopup" type="PopupMenu" parent="Window/ScoreTable"]
 size = Vector2i(112, 100)
 item_count = 1
 item_0/text = "Open battle"
 
-[node name="BattleTimer" type="Timer" parent="ScoreTable"]
+[node name="BattleTimer" type="Timer" parent="Window/ScoreTable"]
 wait_time = 30.0
-autostart = true
-
-[node name="HBoxContainer" type="HBoxContainer" parent="ScoreTable"]
-layout_mode = 0
-offset_left = 186.0
-offset_top = -25.0
-offset_right = 316.0
-offset_bottom = 5.0
-
-[node name="Label" type="Label" parent="ScoreTable/HBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "next battle in:"
-
-[node name="time_remaining" type="Label" parent="ScoreTable/HBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "0"
-
-[node name="TimeDisplayTimer" type="Timer" parent="ScoreTable"]
 autostart = true
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
@@ -183,8 +205,36 @@ offset_right = 82.6507
 offset_bottom = -14.9693
 text = "copied to clipboard"
 
-[connection signal="item_mouse_selected" from="ScoreTable" to="ScoreTable" method="_on_item_mouse_selected"]
-[connection signal="index_pressed" from="ScoreTable/BattlePopup" to="ScoreTable" method="_on_battle_popup_index_pressed"]
-[connection signal="timeout" from="ScoreTable/BattleTimer" to="ScoreTable" method="_on_battle_timer_timeout"]
-[connection signal="timeout" from="ScoreTable/TimeDisplayTimer" to="ScoreTable" method="_on_time_display_timer_timeout"]
+[node name="batle_timer_group" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="batle_timer_group"]
+layout_mode = 0
+offset_left = -1.0
+offset_top = 1.0
+offset_right = 129.0
+offset_bottom = 31.0
+
+[node name="Label" type="Label" parent="batle_timer_group/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "next battle in:"
+
+[node name="time_remaining" type="Label" parent="batle_timer_group/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "0"
+script = SubResource("GDScript_ag053")
+
+[node name="TimeDisplayTimer" type="Timer" parent="batle_timer_group/HBoxContainer"]
+autostart = true
+
+[connection signal="item_mouse_selected" from="Window/ScoreTable" to="Window/ScoreTable" method="_on_item_mouse_selected"]
+[connection signal="time_to_battle_update" from="Window/ScoreTable" to="batle_timer_group/HBoxContainer/time_remaining" method="_on_score_table_time_to_battle_update"]
+[connection signal="index_pressed" from="Window/ScoreTable/BattlePopup" to="Window/ScoreTable" method="_on_battle_popup_index_pressed"]
+[connection signal="timeout" from="Window/ScoreTable/BattleTimer" to="Window/ScoreTable" method="_on_battle_timer_timeout"]
 [connection signal="meta_clicked" from="donat/donat_label" to="donat/donat_label" method="_on_meta_clicked"]
+[connection signal="timeout" from="batle_timer_group/HBoxContainer/TimeDisplayTimer" to="batle_timer_group/HBoxContainer/time_remaining" method="_on_time_display_timer_timeout"]
