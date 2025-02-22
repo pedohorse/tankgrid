@@ -58,6 +58,23 @@ func logged_in_user():
 
 
 func get_user_info(callback):
+	# ping first
+	var req = HTTPRequest.new()
+	add_child(req)
+	req.request(api_host + "/api/test", _common_headers(), HTTPClient.METHOD_GET)
+	req.request_completed.connect(
+		func(result, response_code, _headers, body):
+			req.queue_free()
+			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
+				if callback != null:
+					var error = BackendNotAvailableError.new()
+					error.text = "failed to connect"
+					callback.call(null, error)
+				return
+			__get_user_info_stage2(callback)
+	)
+
+func __get_user_info_stage2(callback):
 	if _session == "":
 		if callback != null:
 			var error = Error.new()
@@ -70,6 +87,7 @@ func get_user_info(callback):
 	req.request(api_host + "/api/user", _common_headers(), HTTPClient.METHOD_GET)
 	req.request_completed.connect(
 		func(result, response_code, _headers, body):
+			req.queue_free()
 			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
 				if callback != null:
 					var error = BackendNotAvailableError.new()
@@ -89,8 +107,6 @@ func get_user_info(callback):
 			user.is_admin = reply.get("is_admin", "false") == "true"
 			if callback != null:
 				callback.call(user, null)
-			
-			req.queue_free()
 	)
 
 func get_programs(callback):
@@ -104,6 +120,7 @@ func get_programs(callback):
 	req.request(api_host + "/api/programs", _common_headers(), HTTPClient.METHOD_GET)
 	req.request_completed.connect(
 		func(result, response_code, _headers, body):
+			req.queue_free()
 			var prog_metas: Array[ProgramMeta] = []
 			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
 				if callback != null:
@@ -124,8 +141,6 @@ func get_programs(callback):
 			
 			if callback != null:
 				callback.call(prog_metas)
-			
-			req.queue_free()
 	)
 
 func get_battle_statistics(callback):		
@@ -134,6 +149,7 @@ func get_battle_statistics(callback):
 	req.request(api_host + "/api/battle/all", _common_headers(), HTTPClient.METHOD_GET)
 	req.request_completed.connect(
 		func(result, response_code, _headers, body):
+			req.queue_free()
 			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
 				if callback != null:
 					callback.call(null)
@@ -147,8 +163,6 @@ func get_battle_statistics(callback):
 			if callback != null:
 				# TODO: make a proper struct wrapper for it instead of having an untyped dict
 				callback.call(reply.get('battles'))
-			
-			req.queue_free()
 	)
 
 func get_battle_top(callback):		
@@ -157,6 +171,7 @@ func get_battle_top(callback):
 	req.request(api_host + "/api/battle/top", _common_headers(), HTTPClient.METHOD_GET)
 	req.request_completed.connect(
 		func(result, response_code, _headers, body):
+			req.queue_free()
 			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
 				if callback != null:
 					callback.call(null)
@@ -170,8 +185,6 @@ func get_battle_top(callback):
 			if callback != null:
 				# TODO: make a proper struct wrapper for it instead of having an untyped dict
 				callback.call(reply.get('top'))
-			
-			req.queue_free()
 	)
 
 func delete_program(prog_id: int, callback):
@@ -189,6 +202,7 @@ func delete_program(prog_id: int, callback):
 	))
 	req.request_completed.connect(
 		func(result, response_code, _headers, body):
+			req.queue_free()
 			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
 				if callback != null:
 					callback.call(false)
@@ -201,8 +215,6 @@ func delete_program(prog_id: int, callback):
 			
 			if callback != null:
 				callback.call(true)
-			
-			req.queue_free()
 	)
 
 func upload_program(prog_name: String, code: String, callback):
@@ -221,6 +233,7 @@ func upload_program(prog_name: String, code: String, callback):
 	))
 	req.request_completed.connect(
 		func(result, response_code, _headers, body):
+			req.queue_free()
 			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
 				if callback != null:
 					callback.call(null)
@@ -233,8 +246,6 @@ func upload_program(prog_name: String, code: String, callback):
 			
 			if callback != null:
 				callback.call(int(reply["program_id"]))
-			
-			req.queue_free()
 	)
 
 func register_new_user(username: String, password: String, invite: String, callback):
@@ -248,6 +259,7 @@ func register_new_user(username: String, password: String, invite: String, callb
 	req.request(api_host + "/api/register", _common_headers(), HTTPClient.METHOD_POST, JSON.stringify(login_data))
 	req.request_completed.connect(
 		func(result, response_code, _headers, body):
+			req.queue_free()
 			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
 				if callback != null:
 					var error := Error.new()
@@ -263,8 +275,6 @@ func register_new_user(username: String, password: String, invite: String, callb
 				return
 
 			login(username, password, callback)
-
-			req.queue_free()
 	)
 
 func login(username: String, password: String, callback):
@@ -277,6 +287,7 @@ func login(username: String, password: String, callback):
 	req.request(api_host + "/api/login", _common_headers(), HTTPClient.METHOD_POST, JSON.stringify(login_data))
 	req.request_completed.connect(
 		func(result, response_code, _headers, body):
+			req.queue_free()
 			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
 				if callback != null:
 					var error := Error.new()
@@ -296,8 +307,6 @@ func login(username: String, password: String, callback):
 				callback.call(true, null)
 				
 			get_user_info(_get_user_after_login)
-			
-			req.queue_free()
 	)
 
 
@@ -307,6 +316,7 @@ func logout(callback):
 	req.request(api_host + "/api/logout", _common_headers(), HTTPClient.METHOD_POST)
 	req.request_completed.connect(
 		func(result, response_code, _headers, body):
+			req.queue_free()
 			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
 				if callback != null:
 					var error := Error.new()
@@ -326,8 +336,6 @@ func logout(callback):
 				callback.call(true, null)
 
 			logged_out.emit()
-
-			req.queue_free()
 	)
 
 
@@ -337,6 +345,7 @@ func delete_user_forever(callback):
 	req.request(api_host + "/api/user", _common_headers(), HTTPClient.METHOD_DELETE)
 	req.request_completed.connect(
 		func(result, response_code, _headers, body):
+			req.queue_free()
 			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
 				if callback != null:
 					var error := Error.new()
@@ -356,8 +365,6 @@ func delete_user_forever(callback):
 				callback.call(true, null)
 
 			logged_out.emit()
-
-			req.queue_free()
 	)
 
 
@@ -367,6 +374,7 @@ func get_time_to_battle(callback):
 	req.request(api_host + "/api/time_to_next_battle", _common_headers(), HTTPClient.METHOD_GET)
 	req.request_completed.connect(
 		func(result, response_code, _headers, body):
+			req.queue_free()
 			if response_code != HTTPClient.RESPONSE_OK or result != HTTPRequest.RESULT_SUCCESS:
 				if callback != null:
 					var error = BackendNotAvailableError.new()
@@ -384,6 +392,4 @@ func get_time_to_battle(callback):
 			var time_remaining = int(reply.get("time_remaining", -1))
 			if callback != null:
 				callback.call(time_remaining, null)
-
-			req.queue_free()
 	)
