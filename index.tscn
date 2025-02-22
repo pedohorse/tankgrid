@@ -213,9 +213,9 @@ offset_bottom = 40.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="batle_timer_group"]
 layout_mode = 0
-offset_left = -1.0
+offset_left = 9.0
 offset_top = 1.0
-offset_right = 129.0
+offset_right = 139.0
 offset_bottom = 31.0
 
 [node name="Label" type="Label" parent="batle_timer_group/HBoxContainer"]
