@@ -22,6 +22,10 @@ config/icon="res://tank_icon_temp.png"
 
 DataAccess="*res://assets/web/data_access.tscn"
 
+[display]
+
+window/per_pixel_transparency/allowed=true
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
